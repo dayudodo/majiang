@@ -1,3 +1,5 @@
+# require './player'
+require_relative 'player'
 # 卡五星的牌面分析，两种牌，b代表饼，t代表条，就这两种牌，没有万。
 BINGZI = ['b1','b2','b3','b4','b5','b6','b7','b8']
 TIAO   = ['t1','t2','t3','t4','t5','t6','t7','t8']
@@ -12,16 +14,16 @@ yiju=(BINGZI*4 + TIAO*4 + ZHIPAI*4).shuffle
 # p yiju.count # 斗地主一共76张牌？
 
 # 三个玩家，每个人都是13张牌。
-a_player=yiju.pop(13)
-b_player=yiju.pop(13)
-c_player=yiju.pop(13)
+a_player=Player.new(yiju.pop(13))
+b_player=Player.new(yiju.pop(13))
+c_player=Player.new(yiju.pop(13))
 
-p a_player.sort
+p a_player
 # 桌子上的牌，需要记录是哪个打的，以便统计
 paimian=yiju.pop
 p paimian
 
-# 当前用户，发的牌属于当前用户，包括还要记录当前用户打的牌
+# 当前用户，发的牌属于当前用户，包括还要记录当前用户打的牌，于是，类就产生了。
 current_player
 
 # 有牌了需要进行交换或者原样打出
