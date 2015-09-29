@@ -55,6 +55,11 @@ p canGang?(someUser,"fa") # 能够扛发财不？
 p someUser.delete "bai"
 p someUser
 
+# 三个顺子是否正确 abbccd, aabbcc, aaabbbccc,似乎用数字更好解决，也就是可否整除3？
+# 111,222,123,789,或者他们的和都是可以整除3的，
+sanshun=%w{b1 b2 b2 b3 b3 b4}
+
+
 # 或者使用纯粹的数字，然后把这些数字重复一下，打印出来，比字符串要快多了。
 # BAIBAN_NUMBER = [11,12,13,14,15,16,17,18,19]
 # 21,22,23,24,25,26,27,28,29
