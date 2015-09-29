@@ -1,0 +1,2 @@
+# majiang
+research chinese mahjong
