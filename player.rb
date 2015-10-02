@@ -62,37 +62,157 @@ class Player
   # 是否是三个有联系的牌面，花色要一致，并且是连续的
   def validABC(option={})
     start=(option[:start] ||= 0)
+    whichPai= option[:shengPai] ||= @shouPai
     length=3
     # 开始序号不能大于10
     raise "can not beyond 10" if start > 10
     # @shouPai[start..(start+length-1)]
     # 判断是否是同一花色，不是说明没联系
     # return false  if (@shouPai[start..(start+length-1)].collect{|x|x[0]}.uniq.count != 1)
-    abc=@shouPai[start..(start+length-1)]
+    abc=whichPai[start..(start+length-1)]
     return false  unless (abc.collect{|x|x[0]}.uniq.count == 1)
     abc.collect!{|x|x[1].to_i}
     # 如果是连续的三张，则为true, 比如1,2,3或者7,8,9这样的
     (abc[0]+1 ==abc[1]) and (abc[1]+1 == abc[2]) ? true : false
   end
 
+  def valid2ABC(option={})
+    whichPai= option[:shengPai] ||= @shouPai
+    if valid2ABC_base(shengPai: whichPai)
+      return true
+    else
+      # 交换122334中的index 2 3，变成123234
+      whichPai = whichPai.exchange(2,3)
+      return valid2ABC_base(shengPai: whichPai)
+    end
+  end
+  # 看来这是个递归的程序了,可惜还不太会写。。。
+  def valid2ABC_base(option={})
+    start=(option[:start] ||= 0)
+    whichPai= option[:shengPai] ||= @shouPai
+    # 长度为6或者7，存在1111234这种情况，这种情况不在此处理
+    first_third=whichPai[start..(start+2)]
+    last_third=whichPai[start+3..(start+5)]
+    p [first_third,last_third]
+    if validAAA(shengPai: first_third) # 如果是aaa这样的牌，检测下一组是否是ABC
+      # 如果开头三2个是AAA，只判断后面的即可
+      if validAAA(shengPai: last_third)
+        return true
+      else
+        return validABC(shengPai: last_third) ? true : false
+      end
+    else
+      # 开头不是三连张,判断是不是123
+      if validABC(:shengPai=> first_third)
+        # 如果是，就判断后面的是不是123或者111
+        return (validABC(shengPai: last_third) or validAAA(shengPai: last_third)) ? true : false
+      else
+        return false
+      end
+    end
+  end
+
+  def valid3ABC(option={})
+    whichPai= option[:shengPai] ||= @shouPai
+    raise "length at least 9" if whichPai.length<9
+    if valid3ABC_base(shengPai: whichPai)
+      return true
+    else
+      whichPai = whichPai.exchange(2,3)
+      return valid3ABC_base(shengPai: whichPai)
+    end
+  end
+
+  def valid3ABC_base(option={})
+    start=(option[:start] ||= 0)
+    whichPai= option[:shengPai] ||= @shouPai
+    first_third=whichPai[start..(start+2)]
+    last_six=whichPai[start+3..(start+8)]
+    if validAAA(shengPai: first_third)
+      return valid2ABC shengPai: last_six
+    else
+      if validABC(shengPai: first_third)
+        return valid2ABC shengPai: last_six
+      else
+        return false
+      end
+    end
+  end
+
+    def valid4ABC(option={})
+    whichPai= option[:shengPai] ||= @shouPai
+    raise "length at least 12" if whichPai.length<12
+    if valid4ABC_base(shengPai: whichPai)
+      return true
+    else
+      whichPai = whichPai.exchange(2,3)
+      return valid4ABC_base(shengPai: whichPai)
+    end
+  end
+
+  def valid4ABC_base(option={})
+    start=(option[:start] ||= 0)
+    whichPai= option[:shengPai] ||= @shouPai
+    raise "length at least 12" if whichPai.length<12
+    first_third=whichPai[start..(start+2)]
+    last_nine=whichPai[start+3..(start+11)]
+    if validAAA(shengPai: first_third)
+      return valid3ABC(shengPai: last_nine)
+    else
+      if validABC(shengPai: first_third)
+        return valid3ABC shengPai: last_nine
+      else
+        return false
+      end
+    end
+  end
 
   # private
   # 胡牌检测
+  def piHu
+    raise "起码要14张牌" if @fourteenPai.length <14
+    # 取出所有的对牌，然后判断是否是屁胡
+    pai_str=@fourteenPai.join
+    # 拿走所有的将与碰或者杠，即相同的牌
+    # 找到所有的AA牌
+    pai_str=@fourteenPai.join
+    all_dui=pai_str.scan(/(..)\1/).flatten
+    # puts all_dui
+    all_dui.each { |dui|
+      shengPai=pai_str.gsub(dui,"") # 先去掉此对牌dui
+      shengPai=shengPai.gsub(/(..)\1\1\1?/,"") # 再把连三、连四去掉
+      p shengPai
+      next if not [3,6,9,12].include?(shengPai.length/2)
+
+      shengPai = shengPai.scan(/(..)/).flatten
+      p shengPai
+      case shengPai.length
+      when 3 then return true if validABC :shengPai=> shengPai
+      when 6 then return true if valid2ABC :shengPai=> shengPai
+      when 9 then return true if valid3ABC :shengPai=> shengPai
+      when 12 then return true if valid4ABC :shengPai=> shengPai
+        # else return false
+      end
+    }
+    # false
+  end
   def pengpengHu
+    raise "起码要14张牌" if @fourteenPai.length <14
     # @fourteenPai[0]
     # 首先要把所有的将牌拿出来，或者判断三个的有多少，拿掉，再看成对的有几个，这就是碰碰胡了。
     temp=@fourteenPai.join
-    reg=/(..)\1\1\1?/ # 可能是三张也可能是四张
-    threeGroup=(temp.scan reg).flatten
-    puts threeGroup
-    threeGroup.each { |e|
-      temp.gsub!(e,"") # 把三、四张连续的都删除掉
-    }
-    return false if temp.length != 4 # 最后剩下的肯定是个将
-    validAA(shengPai: [temp[0..1],temp[2..3]]) ? true : false
+    reg=/(..)\1\1\1?/  # 可能是三张也可能是四张
+    # pengGroup=(temp.scan reg).flatten  # 扫描过后是个二维数组，变成一维的。
+    # pengGroup.each { |e|
+    #   temp.gsub!(e,"") # 把三、四张连续的都删除掉
+    # }
+    temp.gsub!(reg,"") # 有了正则一切变得如此简单
+    temp
+    return false if temp.length != 4 # 最后剩下的肯定是个将，如果不为4，则肯定不是将
+    # validAA(shengPai: [temp[0..1],temp[2..3]]) ? true : false
     # 或者使用正则表达式，俺更熟悉
     temp=~/(..)\1/ ? true : false
-    
+
   end
   def qiduiHu
     raise "起码要14张牌" if @fourteenPai.length <14
@@ -110,4 +230,6 @@ class Player
 
 
   end
+
+
 end
