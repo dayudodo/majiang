@@ -172,12 +172,14 @@ class Player
   def piHu
     raise "起码要14张牌" if @fourteenPai.length <14
     # 取出所有的对牌，然后判断是否是屁胡
+    # 先要判断是否是大胡，如果是，返回大胡有几番。
     pai_str=@fourteenPai.join
     # 拿走所有的将与碰或者杠，即相同的牌
     # 找到所有的AA牌
     pai_str=@fourteenPai.join
     all_dui=pai_str.scan(/(..)\1/).flatten
     # puts all_dui
+    bool_hu=false
     all_dui.each { |dui|
       shengPai=pai_str.gsub(dui,"") # 先去掉此对牌dui
       shengPai=shengPai.gsub(/(..)\1\1\1?/,"") # 再把连三、连四去掉
@@ -185,16 +187,16 @@ class Player
       next if not [3,6,9,12].include?(shengPai.length/2)
 
       shengPai = shengPai.scan(/(..)/).flatten
-      p shengPai
+      p "shengPai:#{shengPai}"
       case shengPai.length
-      when 3 then return true if validABC :shengPai=> shengPai
-      when 6 then return true if valid2ABC :shengPai=> shengPai
-      when 9 then return true if valid3ABC :shengPai=> shengPai
-      when 12 then return true if valid4ABC :shengPai=> shengPai
+      when 3 then bool_hu=true if validABC :shengPai=> shengPai
+      when 6 then bool_hu=true if valid2ABC :shengPai=> shengPai
+      when 9 then bool_hu=true if valid3ABC :shengPai=> shengPai
+      when 12 then bool_hu=true if valid4ABC :shengPai=> shengPai
         # else return false
       end
     }
-    # false
+    bool_hu
   end
   def pengpengHu
     raise "起码要14张牌" if @fourteenPai.length <14

@@ -134,7 +134,7 @@ describe "糊牌之" do
   end
   # 七对检测
 
-  it "碰碰胡" do
+  it "普通碰碰胡" do
     # 碰碰胡检测
     pengpeng=Player.new %w{b1 b1 b1 b2 b2 b2 t3 t3 t3 fa fa fa di}
     pengpeng.naPai="di"
@@ -151,11 +151,26 @@ describe "糊牌之" do
     pengpeng.naPai="t5"
     expect(pengpeng.pengpengHu).to be true
   end
-  # it "规则屁胡" do
-  #   pi=Player.new %w{b1 b2 b2 b3 b3 b4 t4 t5 t6 fa fa fa zh}
-  #   pi.naPai="zh"
-  #   expect(pi.piHu).to be true
-  # end
+  it "碰碰糊带2杠" do
+    pengpeng=Player.new %w{b1 b1 b1 b1 b2 b2 b2 b2 t3 t3 t3 fa fa fa t5}
+    pengpeng.naPai="t5"
+    expect(pengpeng.pengpengHu).to be true
+  end
+    it "碰碰糊带3杠" do
+    pengpeng=Player.new %w{b1 b1 b1 b1 b2 b2 b2 b2 t3 t3 t3 t3 fa fa fa t5}
+    pengpeng.naPai="t5"
+    expect(pengpeng.pengpengHu).to be true
+  end
+  it "规则屁胡" do
+    pi=Player.new %w{b1 b2 b2 b3 b3 b4 t4 t5 t6 fa fa fa zh}
+    pi.naPai="zh"
+    expect(pi.piHu).to be true
+  end
+  it "屁胡false" do
+    pi=Player.new %w{b1 b2 b2 b3 b3 b4 t4 t5 t6 fa fa fa zh}
+    pi.naPai="di"
+    expect(pi.piHu).to be false
+  end
   # it "带杠屁胡" do
   #   # gang_pi=Player.new %w{b1 b2 b2 b3 b3 b4 t4 t5 t6 fa fa fa fa zh}
   #   # gang_pi.naPai="zh"
