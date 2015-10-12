@@ -93,7 +93,7 @@ class Player
     # 长度为6或者7，存在1111234这种情况，这种情况不在此处理
     first_third=whichPai[start..(start+2)]
     last_third=whichPai[start+3..(start+5)]
-    p [first_third,last_third]
+    # p [first_third,last_third]
     if validAAA(shengPai: first_third) # 如果是aaa这样的牌，检测下一组是否是ABC
       # 如果开头三2个是AAA，只判断后面的即可
       if validAAA(shengPai: last_third)
@@ -178,16 +178,21 @@ class Player
     # 找到所有的AA牌
     pai_str=@fourteenPai.join
     all_dui=pai_str.scan(/(..)\1/).flatten
-    # puts all_dui
+    # flatten之后才会是这样：["b2", "b3", "fa", "zh"]
+    # 而不flatten则没法使用，比如[["b2"], ["b3"], ["fa"], ["zh"]]
+    # puts "current pai:#{fourteenPai}"
     bool_hu=false
     all_dui.each { |dui|
-      shengPai=pai_str.gsub(dui,"") # 先去掉此对牌dui
+      reg=Regexp.new("#{dui}#{dui}")
+      shengPai=pai_str.gsub(reg,"") 
+      # 先去掉此对牌dui，一定得是连续的两个，不能去多喽
+      # 不能使用gsub(dui,"")，因为有可能把连续三个的dui牌去掉，参见
+      # majiangtest.spec中多个同花色规则屁胡中的例子
       shengPai=shengPai.gsub(/(..)\1\1\1?/,"") # 再把连三、连四去掉
-      p shengPai
       next if not [3,6,9,12].include?(shengPai.length/2)
 
       shengPai = shengPai.scan(/(..)/).flatten
-      p "shengPai:#{shengPai}"
+      # puts "屁胡shengPai:#{shengPai}"
       case shengPai.length
       when 3 then bool_hu=true if validABC :shengPai=> shengPai
       when 6 then bool_hu=true if valid2ABC :shengPai=> shengPai
@@ -199,7 +204,7 @@ class Player
     bool_hu
   end
   def pengpengHu
-    raise "起码要14张牌" if @fourteenPai.length <14
+    raise "起码要14张牌" if @fourteenPai.length < 14
     # @fourteenPai[0]
     # 首先要把所有的将牌拿出来，或者判断三个的有多少，拿掉，再看成对的有几个，这就是碰碰胡了。
     temp=@fourteenPai.join
@@ -209,15 +214,13 @@ class Player
     #   temp.gsub!(e,"") # 把三、四张连续的都删除掉
     # }
     temp.gsub!(reg,"") # 有了正则一切变得如此简单
-    temp
     return false if temp.length != 4 # 最后剩下的肯定是个将，如果不为4，则肯定不是将
     # validAA(shengPai: [temp[0..1],temp[2..3]]) ? true : false
     # 或者使用正则表达式，俺更熟悉
     temp=~/(..)\1/ ? true : false
-
   end
   def qiduiHu
-    raise "起码要14张牌" if @fourteenPai.length <14
+    raise "起码要14张牌" if @fourteenPai.length < 14
     @fourteenPai.join=~/(..)\1(..)\2(..)\3(..)\4(..)\5(..)\6(..)\7/ ? true : false
   end
   def longqiduiHu

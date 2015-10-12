@@ -126,26 +126,30 @@ describe "valid xx xxx xxx*n" do
 end
 
 describe "糊牌之" do
+  # 七对检测，差一个都不行
   it "七对与龙七对" do
     qidui=Player.new(%w{b1 b1 b2 b2 t9 t9 t9 t9 di di fa fa t3})
     qidui.naPai="t3"
     expect(qidui.qiduiHu).to be true
     expect(qidui.longqiduiHu).to be true
   end
-  # 七对检测
+  it "七对false" do
+    qidui=Player.new(%w{b1 b1 b2 b2 t9 t9 t9 t9 di di fa fa t3})
+    qidui.naPai="t4"
+    expect(qidui.qiduiHu).to be false
+  end
 
+  # 碰碰胡和七对都是最容易检测的。
   it "普通碰碰胡" do
     # 碰碰胡检测
     pengpeng=Player.new %w{b1 b1 b1 b2 b2 b2 t3 t3 t3 fa fa fa di}
     pengpeng.naPai="di"
     expect(pengpeng.pengpengHu).to be true
-  end
-  it "碰碰胡false" do
-    pengpeng=Player.new %w{b1 b1 b1 b2 b2 b2 t3 t3 t4 fa fa fa di}
-    pengpeng.naPai="di"
-    expect(pengpeng.pengpengHu).to be false
-  end
 
+    pengpeng=Player.new %w{b1 b1 b1 b2 b2 b2 zh zh zh fa fa fa di}
+    pengpeng.naPai="di"
+    expect(pengpeng.pengpengHu).to be true
+  end
   it "碰碰糊带1杠" do
     pengpeng=Player.new %w{b1 b1 b1 b1 b2 b2 b2 t3 t3 t3 fa fa fa t5}
     pengpeng.naPai="t5"
@@ -156,24 +160,41 @@ describe "糊牌之" do
     pengpeng.naPai="t5"
     expect(pengpeng.pengpengHu).to be true
   end
-    it "碰碰糊带3杠" do
+  it "碰碰糊带3杠" do
     pengpeng=Player.new %w{b1 b1 b1 b1 b2 b2 b2 b2 t3 t3 t3 t3 fa fa fa t5}
     pengpeng.naPai="t5"
     expect(pengpeng.pengpengHu).to be true
   end
+  it "碰碰胡false" do
+    pengpeng=Player.new %w{b1 b1 b1 b2 b2 b2 t3 t3 t4 fa fa fa di}
+    pengpeng.naPai="di"
+    expect(pengpeng.pengpengHu).to be false
+  end
+
+
   it "规则屁胡" do
     pi=Player.new %w{b1 b2 b2 b3 b3 b4 t4 t5 t6 fa fa fa zh}
     pi.naPai="zh"
     expect(pi.piHu).to be true
   end
+  # 此便为复杂的同花色屁胡
+  it "多个同花色规则屁胡" do
+    pi=Player.new %w{b1 b2 b2 b3 b3 b4 t4 t5 t5 t5 t6 fa fa}
+    pi.naPai="fa"
+    expect(pi.piHu).to be true
+
+    pi=Player.new %w{b1 b2 b2 b3 b3 b4 b4 b5 b5 b5 b6 fa fa}
+    pi.naPai="fa"
+    expect(pi.piHu).to be true
+  end 
   it "屁胡false" do
     pi=Player.new %w{b1 b2 b2 b3 b3 b4 t4 t5 t6 fa fa fa zh}
     pi.naPai="di"
     expect(pi.piHu).to be false
   end
-  # it "带杠屁胡" do
-  #   # gang_pi=Player.new %w{b1 b2 b2 b3 b3 b4 t4 t5 t6 fa fa fa fa zh}
-  #   # gang_pi.naPai="zh"
-  #   # expect(gang_pi.piHu).to be true
-  # end
+  it "带杠屁胡" do
+    # gang_pi=Player.new %w{b1 b2 b2 b3 b3 b4 t4 t5 t6 fa fa fa fa zh}
+    # gang_pi.naPai="zh"
+    # expect(gang_pi.piHu).to be true
+  end
 end
