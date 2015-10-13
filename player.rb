@@ -2,7 +2,7 @@ require_relative 'extension'
 
 class Player
   # 手里面的牌为shouPai, 适合规则的牌是rulePai, 拿到的那张牌为naPai(系统发牌或者别人打的), 14张牌为fourteenPai
-  attr_accessor :shouPai, :rulePai, :naPai, :fourteenPai
+  attr_accessor :shouPai, :rulePai, :naPai, :fourteenPai, :yise
   # 是否胡牌？有很多类似，比如七对，碰碰胡
   attr_reader :huPai
   # 算番
@@ -12,6 +12,7 @@ class Player
     @shouPai=shouPai.sort
     rulePai=[]
     @huPai=false
+    @yise=false
   end
 
   def naPai=(pai)
@@ -138,8 +139,8 @@ class Player
       end
     end
   end
-
-    def valid4ABC(option={})
+  # 确认四个ABC，即12张牌是否规则
+  def valid4ABC(option={})
     whichPai= option[:shengPai] ||= @shouPai
     raise "length at least 12" if whichPai.length<12
     if valid4ABC_base(shengPai: whichPai)
@@ -184,7 +185,7 @@ class Player
     bool_hu=false
     all_dui.each { |dui|
       reg=Regexp.new("#{dui}#{dui}")
-      shengPai=pai_str.gsub(reg,"") 
+      shengPai=pai_str.gsub(reg,"")
       # 先去掉此对牌dui，一定得是连续的两个，不能去多喽
       # 不能使用gsub(dui,"")，因为有可能把连续三个的dui牌去掉，参见
       # majiangtest.spec中多个同花色规则屁胡中的例子
@@ -203,6 +204,16 @@ class Player
     }
     bool_hu
   end
+  # 清一色胡，屁胡之后，看是否是同一个颜色
+  def yise?
+    raise "起码要14张牌" if @fourteenPai.length <14
+    if @fourteenPai.collect{|x|x[0]}.uniq.length == 1
+      return true
+    else
+      return false
+    end
+  end
+  # 碰碰胡
   def pengpengHu
     raise "起码要14张牌" if @fourteenPai.length < 14
     # @fourteenPai[0]
@@ -219,10 +230,12 @@ class Player
     # 或者使用正则表达式，俺更熟悉
     temp=~/(..)\1/ ? true : false
   end
+  # 七对
   def qiduiHu
     raise "起码要14张牌" if @fourteenPai.length < 14
     @fourteenPai.join=~/(..)\1(..)\2(..)\3(..)\4(..)\5(..)\6(..)\7/ ? true : false
   end
+  # 龙七对
   def longqiduiHu
     return false if not qiduiHu
     @fourteenPai.uniq.length < 7 ? true : false
@@ -232,9 +245,5 @@ class Player
     # 首先取出将牌，碰牌(似乎不对，比如123 123 55这样的牌，肯定是超过二对的，但是符合规则！)
     # 取出将牌，成对的，如果超过二对，不能胡。
     raise "起码要14张牌" if @fourteenPai.length <14
-
-
   end
-
-
 end

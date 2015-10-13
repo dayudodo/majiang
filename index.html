@@ -1,40 +1,36 @@
 <!doctype html>
 
 <html ng-app>
-    <head>
-        <script src="js/angular-1.0.1.min.js"></script>
-        <script src="js/jquery.js"></script>
-        <script type="text/javascript">
-            $(function(){
-                // $("#mj-text").val("b1 b2");
-                $("#show").click(function(){
+<head>
+    <script src="js/angular-1.0.1.min.js"></script>
+    <script src="js/jquery.js"></script>
+    <script type="text/javascript">
+    $(function(){
+        $("#show").click(function(){
                     //清空mj-images里面的内容
                     $("#mj-images").html("");
                     source=$("#mj-text").val();
-                 // alert(source);
-                mjArray=source.split(/\s+/);
-                // alert(output);
+                    mjArray=source.split(/\s+/);
 
-                for(var mj in mjArray){
-                     image=$("<img src=''/>");
-                    image.attr("src","image/"+ mjArray[mj] +".png");
-                    image.appendTo("#mj-images");   
-                }
-               
+                    for(var mj in mjArray){
+                        image=$("<img src=''/>");
+                        image.attr("src","image/"+ mjArray[mj] +".png");
+                        image.appendTo("#mj-images");   
+                    }
+                });
+    });
+    </script>
+    <style type="text/css">
+    img{ margin-left: 5px;}
+    </style>
+</head>
+<body>
+    Your name: <input type="text" ng-model="yourname" placeholder="World" id="mj-text">
+    <button id="show">show</button>
+    <hr>
+    Hello {{yourname || 'World'}}!
+    <div id="mj-images">
+    </div>
 
-                });
-                });
-        </script>
-        <style type="text/css">
-            img{ margin-left: 5px;}
-        </style>
-    </head>
-    <body>
-        Your name: <input type="text" ng-model="yourname" placeholder="World" id="mj-text">
-        <button id="show">show</button>
-        <hr>
-        Hello {{yourname || 'World'}}!
-        <div id="mj-images">
-        </div>
-    </body>
+</body>
 </html>

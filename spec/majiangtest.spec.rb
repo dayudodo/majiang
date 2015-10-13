@@ -171,12 +171,24 @@ describe "糊牌之" do
     expect(pengpeng.pengpengHu).to be false
   end
 
+  it "清一色" do
+    qing=Player.new %w{b1 b2 b2 b3 b3 b4 b4 b5 b5 b5 b6 b7 b7}
+    qing.naPai="b7"
+    expect(qing.yise?).to be true
+  end
+
+  it "清一色false" do
+    qing=Player.new %w{b1 b2 b2 b3 b3 b4 b4 b5 b5 b5 b6 b7 b7}
+    qing.naPai="fa"
+    expect(qing.yise?).to be false
+  end
 
   it "规则屁胡" do
     pi=Player.new %w{b1 b2 b2 b3 b3 b4 t4 t5 t6 fa fa fa zh}
     pi.naPai="zh"
     expect(pi.piHu).to be true
   end
+
   # 此便为复杂的同花色屁胡
   it "多个同花色规则屁胡" do
     pi=Player.new %w{b1 b2 b2 b3 b3 b4 t4 t5 t5 t5 t6 fa fa}
@@ -197,4 +209,6 @@ describe "糊牌之" do
     # gang_pi.naPai="zh"
     # expect(gang_pi.piHu).to be true
   end
+
+
 end
