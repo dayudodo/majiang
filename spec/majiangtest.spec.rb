@@ -10,11 +10,11 @@ describe "valid xx xxx xxx*n" do
 
   it "validAAA 三同牌" do
     three=Player.new %w{fa fa fa}
-    expect(three.validAAA).to be true
+    expect(three.validAAA shengPai: %w{fa fa fa}).to be true
   end
   it "validAAA false" do
     three=Player.new %w{fa fa b1 b2}
-    expect(three.validAAA).to be false
+    expect(three.validAAA shengPai:%w{fa fa b1 b2}).to be false
   end
 
   it "validAAAA 四同牌" do
@@ -171,25 +171,23 @@ describe "糊牌之" do
     expect(pengpeng.pengpengHu).to be false
   end
 
-  it "清一色" do
+  it "花色相同" do
     qing=Player.new %w{b1 b2 b2 b3 b3 b4 b4 b5 b5 b5 b6 b7 b7}
     qing.naPai="b7"
     expect(qing.yise?).to be true
   end
-
-  it "清一色false" do
+  it "花色相同false" do
     qing=Player.new %w{b1 b2 b2 b3 b3 b4 b4 b5 b5 b5 b6 b7 b7}
     qing.naPai="fa"
     expect(qing.yise?).to be false
   end
 
+  # 屁胡难喽。。。还要算杠
   it "规则屁胡" do
     pi=Player.new %w{b1 b2 b2 b3 b3 b4 t4 t5 t6 fa fa fa zh}
     pi.naPai="zh"
     expect(pi.piHu).to be true
   end
-
-  # 此便为复杂的同花色屁胡
   it "多个同花色规则屁胡" do
     pi=Player.new %w{b1 b2 b2 b3 b3 b4 t4 t5 t5 t5 t6 fa fa}
     pi.naPai="fa"
@@ -199,16 +197,30 @@ describe "糊牌之" do
     pi.naPai="fa"
     expect(pi.piHu).to be true
   end 
+
+  it "带杠屁胡" do
+    gang_pi=Player.new %w{t1 t2 t3 t4 t5 t6 b4 b5 b6 fa fa fa fa zh}
+    gang_pi.naPai="zh"
+    expect(gang_pi.piHu).to be true
+  end
+  it "复杂清一色外加屁胡" do
+    # 有连续的4个b5
+    qing=Player.new %w{b1 b2 b2 b3 b3 b4 b4 b5 b5 b5 b5 b6 b7}
+    qing.naPai="b7"
+    expect(qing.piHu).to be true
+  end
   it "屁胡false" do
     pi=Player.new %w{b1 b2 b2 b3 b3 b4 t4 t5 t6 fa fa fa zh}
     pi.naPai="di"
     expect(pi.piHu).to be false
   end
-  it "带杠屁胡" do
-    # gang_pi=Player.new %w{b1 b2 b2 b3 b3 b4 t4 t5 t6 fa fa fa fa zh}
-    # gang_pi.naPai="zh"
-    # expect(gang_pi.piHu).to be true
+
+
+  describe "听牌" do
+    it "清一色听牌" do
+      qing=Player.new %w{b1 b2 b2 b3 b3 b4 b4 b5 b5 b5 b6 b7 b7}
+      qing.naPai="b7"
+      expect(qing.yise?).to be true
+    end
   end
-
-
 end

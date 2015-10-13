@@ -2,7 +2,7 @@ require_relative 'extension'
 
 class Player
   # 手里面的牌为shouPai, 适合规则的牌是rulePai, 拿到的那张牌为naPai(系统发牌或者别人打的), 14张牌为fourteenPai
-  attr_accessor :shouPai, :rulePai, :naPai, :fourteenPai, :yise
+  attr_accessor :shouPai, :rulePai, :naPai, :fourteenPai, :yise, :origin_shouPai, :chuPai
   # 是否胡牌？有很多类似，比如七对，碰碰胡
   attr_reader :huPai
   # 算番
@@ -16,7 +16,8 @@ class Player
   end
 
   def naPai=(pai)
-    @fourteenPai=(@shouPai<<pai).sort
+    # @fourteenPai=(@shouPai<<pai).sort
+    @fourteenPai=(@shouPai + [pai]).sort
   end
 
 
@@ -35,12 +36,13 @@ class Player
     validAAA(pai: pai)
   end
   def validSame(how_many,option={})
-    # 接收三个参数:start, :length, :pai
+    # 接收三个参数:start, :length, :pai, 索引开始start, 长度为length, pai是你检测哪个牌
     start=(option[:start] ||= 0)
     length=(option[:length] ||= how_many)
     # 如果传递的是一个剩牌组合：比如["b1","b1"], 那么同样可以检测出来！
-    whichPai= option[:shengPai] ||= @shouPai
-    # 加入判断牌而并通过索引查询的方法
+    # whichPai= option[:shengPai] ||= @shouPai
+    whichPai= option[:shengPai] ||= @fourteenPai
+    # 加入判断牌并通过索引查询的方法
     if option[:pai]
       whichPai.count(option[:pai].to_s) == how_many ? true : false
     else
@@ -170,40 +172,56 @@ class Player
 
   # private
   # 胡牌检测
-  def piHu
-    raise "起码要14张牌" if @fourteenPai.length <14
+  def piHu(option={})
     # 取出所有的对牌，然后判断是否是屁胡
     # 先要判断是否是大胡，如果是，返回大胡有几番。
-    pai_str=@fourteenPai.join
     # 拿走所有的将与碰或者杠，即相同的牌
     # 找到所有的AA牌
-    pai_str=@fourteenPai.join
+    whichPai= option[:shengPai] ||= @fourteenPai
+    pai_str=whichPai.join
+    raise "起码要14张牌" if whichPai.length <14
     all_dui=pai_str.scan(/(..)\1/).flatten
     # flatten之后才会是这样：["b2", "b3", "fa", "zh"]
     # 而不flatten则没法使用，比如[["b2"], ["b3"], ["fa"], ["zh"]]
-    # puts "current pai:#{fourteenPai}"
+    # puts "current fourteenPai:#{fourteenPai}"
     bool_hu=false
-    all_dui.each { |dui|
+    all_dui.each do |dui|
       reg=Regexp.new("#{dui}#{dui}")
       shengPai=pai_str.gsub(reg,"")
+      # puts shengPai
+      origin=shengPai.dup
       # 先去掉此对牌dui，一定得是连续的两个，不能去多喽
       # 不能使用gsub(dui,"")，因为有可能把连续三个的dui牌去掉，参见
       # majiangtest.spec中多个同花色规则屁胡中的例子
-      shengPai=shengPai.gsub(/(..)\1\1\1?/,"") # 再把连三、连四去掉
-      next if not [3,6,9,12].include?(shengPai.length/2)
 
-      shengPai = shengPai.scan(/(..)/).flatten
-      # puts "屁胡shengPai:#{shengPai}"
-      case shengPai.length
-      when 3 then bool_hu=true if validABC :shengPai=> shengPai
-      when 6 then bool_hu=true if valid2ABC :shengPai=> shengPai
-      when 9 then bool_hu=true if valid3ABC :shengPai=> shengPai
-      when 12 then bool_hu=true if valid4ABC :shengPai=> shengPai
-        # else return false
+      shengPai=shengPai.gsub(/(..)\1\1\1/,"") # 先把连四去掉
+      # next if not [3,6,9,12].include?(shengPai.length/2)
+      2.times do
+        # puts shengPai
+        shengPai = strToArray(shengPai)
+        # puts "屁胡shengPai:#{shengPai}"
+        case shengPai.length
+        when 3 then bool_hu=true if validABC :shengPai=> shengPai
+        when 6 then bool_hu=true if valid2ABC :shengPai=> shengPai
+        when 9 then bool_hu=true if valid3ABC :shengPai=> shengPai
+        when 12 then bool_hu=true if valid4ABC :shengPai=> shengPai
+        end
+        # 如果还不能胡，连四去掉后检测一次是否胡
+        if false==bool_hu
+          shengPai=origin.gsub(/(..)\1\1/,"") # 再把连三去掉，不能先去连三
+        end
       end
-    }
+    end
     bool_hu
   end
+  def strToArray(str)
+    if str.class==Array
+      # raise "str is array:#{str}"
+      return str
+    end
+    str.scan(/(..)/).flatten
+  end
+
   # 清一色胡，屁胡之后，看是否是同一个颜色
   def yise?
     raise "起码要14张牌" if @fourteenPai.length <14
@@ -245,5 +263,21 @@ class Player
     # 首先取出将牌，碰牌(似乎不对，比如123 123 55这样的牌，肯定是超过二对的，但是符合规则！)
     # 取出将牌，成对的，如果超过二对，不能胡。
     raise "起码要14张牌" if @fourteenPai.length <14
+  end
+
+  def tingHuvalid
+    hupai_zhang=[]
+    all_single_pai = BING+TIAO+ZHIPAI
+    # origin_shouPai=@shouPai
+
+    all_single_pai.each{ |single_pai|
+      # fourteen=@shouPai + [single_pai]
+      self.naPai=single_pai
+      # puts "fourteen: #{fourteenPai}"
+      if piHu :shengPai=>@fourteenPai
+        hupai_zhang<<single_pai
+      end
+    }
+    hupai_zhang
   end
 end
