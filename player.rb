@@ -72,6 +72,7 @@ class Player
     # @shouPai[start..(start+length-1)]
     # 判断是否是同一花色，不是说明没联系
     # return false  if (@shouPai[start..(start+length-1)].collect{|x|x[0]}.uniq.count != 1)
+    return true if validAAA(option) # 如果是AAA直接返回true, 连三就是有关系的ABC特例
     abc=whichPai[start..(start+length-1)]
     return false  unless (abc.collect{|x|x[0]}.uniq.count == 1)
     abc.collect!{|x|x[1].to_i}
@@ -214,23 +215,7 @@ class Player
     end
     bool_hu
   end
-  def strToArray(str)
-    if str.class==Array
-      # raise "str is array:#{str}"
-      return str
-    end
-    str.scan(/(..)/).flatten
-  end
 
-  # 清一色胡，屁胡之后，看是否是同一个颜色
-  def yise?
-    raise "起码要14张牌" if @fourteenPai.length <14
-    if @fourteenPai.collect{|x|x[0]}.uniq.length == 1
-      return true
-    else
-      return false
-    end
-  end
   # 碰碰胡
   def pengpengHu
     raise "起码要14张牌" if @fourteenPai.length < 14
@@ -265,7 +250,8 @@ class Player
     raise "起码要14张牌" if @fourteenPai.length <14
   end
 
-  def tingHuvalid
+  # 胡啥牌？可以检测13张牌到底胡哪些个。
+  def huShaPai
     hupai_zhang=[]
     all_single_pai = BING+TIAO+ZHIPAI
     # origin_shouPai=@shouPai
@@ -278,6 +264,24 @@ class Player
         hupai_zhang<<single_pai
       end
     }
-    hupai_zhang
+    hupai_zhang.sort
+  end
+
+  # 字符串转换成数组，比如b1b2b3会变成["b1","b2","b3"]
+  def strToArray(str)
+    if str.class==Array
+      # raise "str is array:#{str}"
+      return str
+    end
+    str.scan(/(..)/).flatten
+  end
+  # 一色？检测全牌是否是同一花色
+  def yise?
+    raise "起码要14张牌" if @fourteenPai.length <14
+    if @fourteenPai.collect{|x|x[0]}.uniq.length == 1
+      return true
+    else
+      return false
+    end
   end
 end

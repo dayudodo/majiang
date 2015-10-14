@@ -6,29 +6,46 @@
     <script src="js/jquery.js"></script>
     <script type="text/javascript">
     $(function(){
+        BING = ['b1','b2','b3','b4','b5','b6','b7','b8','b9'];
+        TIAO   = ['t1','t2','t3','t4','t5','t6','t7','t8','t9'];
+        ZHIPAI    = ['zh','fa','di'];
+        all_single_pai=BING.concat(TIAO).concat(ZHIPAI));
+        
         $("#show").click(function(){
                     //清空mj-images里面的内容
                     $("#mj-images").html("");
                     source=$("#mj-text").val();
+                    // source=source.replace(/\s+$/,"");
                     mjArray=source.split(/\s+/);
-
+                    console.log(mjArray);
+                    var count=0;
                     for(var mj in mjArray){
-                        image=$("<img src=''/>");
-                        image.attr("src","image/"+ mjArray[mj] +".png");
-                        image.appendTo("#mj-images");   
+                        //有时候空格多了就会在最后生成一个空字符串，判断有内容了再去显示
+                        if (mjArray[mj]!="") {
+                            image=$("<img src=''/>");
+                            image.attr("src","image/"+ mjArray[mj] +".png");
+                            image.appendTo("#mj-images");   
+                            count++;
+                        };
                     }
+                    $("#count").html(count);
                 });
     });
-    </script>
-    <style type="text/css">
-    img{ margin-left: 5px; border: solid}
-    </style>
+</script>
+<script type="text/javascript">
+$(function(){
+
+})
+</script>
+<style type="text/css">
+img{ margin-left: 5px; border: solid}
+</style>
 </head>
 <body>
-    Your name: <input type="text" ng-model="yourname" placeholder="World" id="mj-text">
+    Your name: <input type="text" ng-model="yourname" placeholder="World" id="mj-text" size="40">
     <button id="show">show</button>
     <hr>
-    Hello {{yourname || 'World'}}!
+    Hello {{yourname || 'World'}}!! count: <span id="count"></span>
     <div id="mj-images">
     </div>
 

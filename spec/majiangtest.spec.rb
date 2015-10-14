@@ -196,7 +196,8 @@ describe "糊牌之" do
     pi=Player.new %w{b1 b2 b2 b3 b3 b4 b4 b5 b5 b5 b6 fa fa}
     pi.naPai="fa"
     expect(pi.piHu).to be true
-  end 
+  end
+
 
   it "带杠屁胡" do
     gang_pi=Player.new %w{t1 t2 t3 t4 t5 t6 b4 b5 b6 fa fa fa fa zh}
@@ -215,12 +216,23 @@ describe "糊牌之" do
     expect(pi.piHu).to be false
   end
 
-
-  describe "听牌" do
+# huShaPai最后会返回一个排序的数组，注意顺序
+  describe "胡啥牌" do
     it "清一色听牌" do
       qing=Player.new %w{b1 b2 b2 b3 b3 b4 b4 b5 b5 b5 b6 b7 b7}
-      qing.naPai="b7"
-      expect(qing.yise?).to be true
+      expect(qing.huShaPai).to eq ["b5", "b7"]
+    end
+    it "清一色听7张" do
+      qing=Player.new %w{b1 b2 b3 b4 b5 b6 b7 b8 b8 b8 b9 b9 b9 }
+      expect(qing.huShaPai).to eq ["b1", "b3", "b4", "b6", "b7", "b8", "b9"]
+    end
+    it "清一色听牌false" do
+      qing=Player.new %w{b1 b2 b3 b4 b5 b6 b7 b8 b8 b8 t1 t3 t5 }
+      expect(qing.huShaPai).to eq([])
+    end
+    it "双将倒" do
+      peng=Player.new %w{zh zh di di b1 b2 b3 t2 t2 t2 fa fa fa}
+      expect(peng.huShaPai).to eq(["di","zh"])
     end
   end
 end
