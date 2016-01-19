@@ -23,8 +23,12 @@ p qing.huShaPai
 qing=Player.new %w{b1 b2 b2 b2 b2 b3 b3 b3 b4 b5 b6 b7 b8}
 p qing.huShaPai
 
-peng=Player.new %w{zh zh di di b1 b2 b3 t2 t2 t2 t2 fa fa fa fa}
+peng=Player.new %w{b1 b2 b2 b2 b3 b4 b5 b6 t1 t2 t2 t3 t3}
 p peng.huShaPai # wow, 碰碰胡啥牌也可以检测出来了！
+# t1 t1 t2 t2 t3 t3 如何检测出是正确的牌？
+peng=Player.new %w{b1 b2 b2 b2 b3  t1 t1 t1 t1 t2 t2 t3 t3}
+p peng.huShaPai # wow, 碰碰胡啥牌也可以检测出来了！
+# t1 t1 t2 t2 t3 t3 如何检测出是正确的牌？
 
     # qing=Player.new %w{b1 b2 b2 b3 b3 b4 b4 b5 b5 b5 b5 b6 b7}
     # qing.naPai="b7"

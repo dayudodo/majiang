@@ -85,12 +85,21 @@ class Player
     if valid2ABC_base(shengPai: whichPai)
       return true
     else
+
       # 交换122334中的index 2 3，变成123234
       whichPai = whichPai.exchange(2,3)
-      return valid2ABC_base(shengPai: whichPai)
+      return true if valid2ABC_base(shengPai: whichPai)
+      # 压缩一下牌，看是否是t1 t1 t2 t2 t3 t3这种情况，还要优先判断上面的情况
+      comp=whichPai.uniq 
+      # 判断是否成对，以避免 b4 b5 b5 b5 b6 b6 也被判断为正确
+      doubleEqual = (whichPai[0]==whichPai[1]  and whichPai[2]==whichPai[3] and whichPai[4]==whichPai[5])
+      if doubleEqual  and comp.length==3 and validABC(shengPai: comp)
+        return true
+      end
     end
+    false
   end
-  # 看来这是个递归的程序了,可惜还不太会写。。。
+  # 像是个递归的程序了,可惜还不太会写。。。
   def valid2ABC_base(option={})
     start=(option[:start] ||= 0)
     whichPai= option[:shengPai] ||= @shouPai
