@@ -234,5 +234,9 @@ describe "糊牌之" do
       peng=Player.new %w{zh zh di di b1 b2 b3 t2 t2 t2 fa fa fa}
       expect(peng.huShaPai).to eq(["di","zh"])
     end
+    it "不能有五张牌" do
+      peng=Player.new %w{b1 b2 b2 b2 b3  t1 t1 t1 t1 t2 t2 t3 t3}
+      expect(peng.huShaPai).to eq(["t4"])
+    end
   end
 end

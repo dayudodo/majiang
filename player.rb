@@ -268,8 +268,10 @@ class Player
     all_single_pai.each{ |single_pai|
       # fourteen=@shouPai + [single_pai]
       self.naPai=single_pai
+      # 如果包括5张相同的，跳过
+      next if @fourteenPai.join.scan(single_pai).length>4
       # puts "fourteen: #{fourteenPai}"
-      if piHu :shengPai=>@fourteenPai
+      if piHu(:shengPai=>@fourteenPai)
         hupai_zhang<<single_pai
       end
     }

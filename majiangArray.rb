@@ -27,8 +27,8 @@ peng=Player.new %w{b1 b2 b2 b2 b3 b4 b5 b6 t1 t2 t2 t3 t3}
 p peng.huShaPai # wow, 碰碰胡啥牌也可以检测出来了！
 # t1 t1 t2 t2 t3 t3 如何检测出是正确的牌？
 peng=Player.new %w{b1 b2 b2 b2 b3  t1 t1 t1 t1 t2 t2 t3 t3}
-p peng.huShaPai # wow, 碰碰胡啥牌也可以检测出来了！
-# t1 t1 t2 t2 t3 t3 如何检测出是正确的牌？
+p peng.huShaPai 
+# 新问题，已经有四个t1了，就不能再往里面添加！ 这种情况在你发好牌的情况下不会出现，但是在单独测试的时候就有可能！
 
     # qing=Player.new %w{b1 b2 b2 b3 b3 b4 b4 b5 b5 b5 b5 b6 b7}
     # qing.naPai="b7"
