@@ -69,6 +69,7 @@ class Player
     length=3
     # 开始序号不能大于10
     raise "can not beyond 10" if start > 10
+    # raise "must three" if whichPai.length > 3
     # @shouPai[start..(start+length-1)]
     # 判断是否是同一花色，不是说明没联系
     # return false  if (@shouPai[start..(start+length-1)].collect{|x|x[0]}.uniq.count != 1)
@@ -139,13 +140,17 @@ class Player
   def valid3ABC_base(option={})
     start=(option[:start] ||= 0)
     whichPai= option[:shengPai] ||= @shouPai
+    # 其实应该先看前6，再看后3！
     first_third=whichPai[start..(start+2)]
     last_six=whichPai[start+3..(start+8)]
-    if validAAA(shengPai: first_third)
-      return valid2ABC shengPai: last_six
+    first_six=whichPai[start..(start+5)]
+    last_three=whichPai[start+6..(start+8)]
+
+    if valid2ABC(shengPai: first_six)
+      return validABC(shengPai: last_three)
     else
       if validABC(shengPai: first_third)
-        return valid2ABC shengPai: last_six
+        return valid2ABC(shengPai: last_six)
       else
         return false
       end
@@ -169,11 +174,22 @@ class Player
     raise "length at least 12" if whichPai.length<12
     first_third=whichPai[start..(start+2)]
     last_nine=whichPai[start+3..(start+11)]
-    if validAAA(shengPai: first_third)
-      return valid3ABC(shengPai: last_nine)
+    first_nine=whichPai[start..(start+8)]
+    last_three=whichPai[start+9..(start+11)]
+    # if validAAA(shengPai: first_third)
+    #   return valid3ABC(shengPai: last_nine)
+    # else
+    #   if validABC(shengPai: first_third)
+    #     return valid3ABC shengPai: last_nine
+    #   else
+    #     return false
+    #   end
+    # end
+    if valid3ABC(shengPai: first_nine)
+      return validABC(shengPai: last_three)
     else
       if validABC(shengPai: first_third)
-        return valid3ABC shengPai: last_nine
+        return valid3ABC(shengPai: last_nine)
       else
         return false
       end

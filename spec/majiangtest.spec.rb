@@ -93,6 +93,14 @@ describe "valid xx xxx xxx*n" do
     abc3=Player.new %w{b1 b2 b2 b3 b3 b4 t1 t2 t3}
     expect(abc3.valid3ABC).to be true
   end
+  it "valid3ABC 九张 112233456" do
+    abc3=Player.new %w{b1 b1 b2 b2 b3 b3 b4 b5 b6}
+    expect(abc3.valid3ABC).to be true
+  end
+  it "valid3ABC 九张 123445566" do
+    abc3=Player.new %w{b1 b2 b3 b4 b4 b5 b5 b6 b6}
+    expect(abc3.valid3ABC).to be true
+  end
   it "valid3ABC 9张 false" do
     abc3=Player.new %w{b1 b2 b3 fa fa fa t1 t2 t2}
     expect(abc3.valid3ABC).to be false
@@ -118,6 +126,15 @@ describe "valid xx xxx xxx*n" do
     abc4=Player.new %w{zh zh zh b1 b2 b2 b3 b3 b4 t1 t2 t3}
     expect(abc4.valid4ABC).to be true
   end
+  it "valid4ABC 12张牌 前9 112233" do
+    abc4=Player.new %w{b1 b1 b2 b2 b3 b3 b4 b5 b6 b7 b8 b9 }
+    expect(abc4.valid4ABC).to be true
+  end
+  it "valid4ABC 12张牌 后9 112233" do
+    abc4=Player.new %w{b1 b2 b3 b4 b4 b5 b5 b6 b6 b7 b7 b7}
+    expect(abc4.valid4ABC).to be true
+  end
+
   it "valid4ABC 12 false" do
     abc4=Player.new %w{b1 b2 b3 fa fa fa t1 t2 t2 t3 t3 zh}
     expect(abc4.valid4ABC).to be false
@@ -237,6 +254,10 @@ describe "糊牌之" do
     it "不能有五张牌" do
       peng=Player.new %w{b1 b2 b2 b2 b3  t1 t1 t1 t1 t2 t2 t3 t3}
       expect(peng.huShaPai).to eq(["t4"])
+    end
+    it "少将" do
+      peng=Player.new %w{b1 b1 b2 b2 b3 b3 b4 b5 b6 b7 b7 b7 b8}
+      expect(peng.huShaPai).to eq(["b3","b6","b8","b9"])
     end
   end
 end
